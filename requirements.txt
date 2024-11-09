@@ -1,0 +1,8 @@
+Flask
+python-dotenv
+groq
+PyPDF2
+pymongo
+Werkzeug
+typing
+logging

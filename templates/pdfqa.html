@@ -1,0 +1,334 @@
+{% extends "base.html" %}
+
+{% block title %}PDF QA Generator - Interview Assistant{% endblock %}
+
+{% block page_css %}
+<style>
+    .pdf-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .upload-section {
+        background-color: var(--card-bg);
+        border: 2px dashed var(--border-color);
+        border-radius: 1rem;
+        padding: 2rem;
+        text-align: center;
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .upload-section.dragover {
+        background-color: var(--hover-bg);
+        border-color: var(--primary-color);
+    }
+
+    .upload-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .upload-text {
+        margin-bottom: 1rem;
+        color: var(--text-secondary);
+    }
+
+    .file-input {
+        display: none;
+    }
+
+    .upload-btn {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .upload-btn:hover {
+        opacity: 0.9;
+    }
+
+    .qa-container {
+        display: none;
+        margin-top: 2rem;
+    }
+
+    .qa-pair {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: transform 0.2s ease;
+    }
+
+    .qa-pair:hover {
+        transform: translateY(-2px);
+        background-color: var(--hover-bg);
+    }
+
+    .question {
+        color: var(--primary-color);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .answer {
+        color: var(--text-primary);
+        line-height: 1.6;
+    }
+
+    /* Markdown Styles */
+    .markdown-content h1,
+    .markdown-content h2,
+    .markdown-content h3,
+    .markdown-content h4,
+    .markdown-content h5,
+    .markdown-content h6 {
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .markdown-content p {
+        margin-bottom: 1rem;
+    }
+
+    .markdown-content ul,
+    .markdown-content ol {
+        margin-bottom: 1rem;
+        padding-left: 1.5rem;
+    }
+
+    .markdown-content code {
+        background-color: var(--code-bg);
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.25rem;
+        font-family: monospace;
+    }
+
+    .markdown-content pre {
+        background-color: var(--code-bg);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        overflow-x: auto;
+        margin-bottom: 1rem;
+    }
+
+    .markdown-content blockquote {
+        border-left: 4px solid var(--primary-color);
+        padding-left: 1rem;
+        margin-left: 0;
+        margin-bottom: 1rem;
+        color: var(--text-secondary);
+    }
+
+    .loading-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .loading-content {
+        background-color: var(--card-bg);
+        padding: 2rem;
+        border-radius: 1rem;
+        text-align: center;
+    }
+
+    .loading-spinner {
+        color: var(--primary-color);
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .error-message {
+        color: #dc3545;
+        background-color: #ffe6e6;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pdf-container">
+    <h2>PDF Question Generator</h2>
+    <p style="margin-bottom: 2rem; color: var(--text-secondary);">Upload a PDF document to generate questions and answers</p>
+
+    <div class="error-message" id="errorMessage"></div>
+
+    <div class="upload-section" id="dropZone">
+        <i class="fas fa-file-pdf upload-icon"></i>
+        <p class="upload-text">Drag and drop your PDF here or click to browse</p>
+        <input type="file" id="fileInput" class="file-input" accept=".pdf">
+        <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+            Choose File
+        </button>
+    </div>
+
+    <div class="qa-container" id="qaContainer">
+        <h3 style="margin-bottom: 1.5rem;">Generated Questions & Answers</h3>
+        <div id="qaList"></div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <i class="fas fa-spinner fa-spin loading-spinner"></i>
+            <p>Generating questions and answers...</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.2/marked.min.js"></script>
+<script>
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const errorMessage = document.getElementById('errorMessage');
+    const qaContainer = document.getElementById('qaContainer');
+
+    // Configure marked options
+    marked.setOptions({
+        gfm: true,
+        breaks: true,
+        sanitize: true
+    });
+
+    // Drag and drop handlers
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, unhighlight, false);
+    });
+
+    dropZone.addEventListener('drop', handleDrop, false);
+    fileInput.addEventListener('change', handleFileSelect, false);
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    function highlight(e) {
+        dropZone.classList.add('dragover');
+    }
+
+    function unhighlight(e) {
+        dropZone.classList.remove('dragover');
+    }
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handleFiles(files);
+    }
+
+    function handleFileSelect(e) {
+        const files = e.target.files;
+        handleFiles(files);
+    }
+
+    function handleFiles(files) {
+        if (files.length > 0) {
+            const file = files[0];
+            if (file.type !== 'application/pdf') {
+                showError('Please upload a PDF file');
+                return;
+            }
+            uploadFile(file);
+        }
+    }
+
+    function uploadFile(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        showLoading();
+        hideError();
+
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            hideLoading();
+            if (data.error) {
+                showError(data.error);
+            } else {
+                displayQAPairs(data.data);
+            }
+        })
+        .catch(error => {
+            hideLoading();
+            showError('Error processing the PDF. Please try again.');
+            console.error('Error:', error);
+        });
+    }
+
+    function displayQAPairs(qaPairs) {
+        const qaList = document.getElementById('qaList');
+        qaList.innerHTML = '';
+
+        qaPairs.forEach((qa, index) => {
+            const qaDiv = document.createElement('div');
+            qaDiv.className = 'qa-pair';
+            
+            // Convert markdown to HTML for both question and answer
+            const questionHtml = marked.parse(qa.question);
+            const answerHtml = marked.parse(qa.answer);
+            
+            qaDiv.innerHTML = `
+                <div class="question markdown-content">Q${index + 1}: ${questionHtml}</div>
+                <div class="answer markdown-content">${answerHtml}</div>
+            `;
+            qaList.appendChild(qaDiv);
+        });
+
+        qaContainer.style.display = 'block';
+    }
+
+    function showLoading() {
+        loadingOverlay.style.display = 'flex';
+    }
+
+    function hideLoading() {
+        loadingOverlay.style.display = 'none';
+    }
+
+    function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.style.display = 'block';
+    }
+
+    function hideError() {
+        errorMessage.style.display = 'none';
+    }
+</script>
+{% endblock %}
