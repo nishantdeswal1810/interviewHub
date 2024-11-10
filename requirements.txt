@@ -6,3 +6,4 @@ pymongo
 Werkzeug
 typing
 logging
+gunicorn
