@@ -28,9 +28,10 @@ A comprehensive web application designed to help users prepare for interviews th
 
 ### 4. Notes System
 - Personal note-taking functionality
-- Notes are associated with usernames
+- Notes are associated with usernames and passwords
 - Persistent storage using MongoDB
 - Access notes across all pages
+- Downoad notes in .txt format with dates.
 
 ## 🛠️ Technology Stack
 
