@@ -28,6 +28,10 @@
             --border-color: #E5E7EB;
             --hover-bg: #F3F4F6;
             --navbar-height: 64px;
+            --error-color: #dc2626;
+            --error-bg: #fee2e2;
+            --success-color: #16a34a;
+            --success-bg: #dcfce7;
         }
 
         * {
@@ -104,24 +108,7 @@
             color: white;
         }
 
-        .mobile-menu-button {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--text-primary);
-            padding: 0.5rem;
-            cursor: pointer;
-        }
-
-        .container {
-            flex: 1;
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
-        }
-
-        /* Notes Modal Styles */
+        /* Notes Button Styles */
         .notes-button {
             position: fixed;
             bottom: 2rem;
@@ -144,35 +131,43 @@
             transform: scale(1.1);
         }
 
+        /* Notes Modal Styles */
         .notes-modal {
             display: none;
             position: fixed;
             bottom: 6rem;
             right: 2rem;
-            width: 350px;
+            width: 400px !important;
+            height: 450px;
             background: var(--card-bg);
             border-radius: 1rem;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
             z-index: 1000;
+            overflow: hidden;
         }
 
         .notes-modal-content {
             display: flex;
             flex-direction: column;
             height: 100%;
+            overflow: hidden;
         }
 
         .notes-header {
-            padding: 1rem;
+            padding: 1.5rem;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background-color: var(--card-bg);
+            flex-shrink: 0;
         }
 
         .notes-header h3 {
             margin: 0;
             color: var(--text-primary);
+            font-size: 1.25rem;
+            font-weight: 600;
         }
 
         .close-modal {
@@ -181,36 +176,203 @@
             font-size: 1.5rem;
             cursor: pointer;
             color: var(--text-secondary);
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .close-modal:hover {
+            background-color: var(--hover-bg);
+            color: var(--error-color);
         }
 
         .notes-body {
-            padding: 1rem;
-            max-height: 400px;
+            padding: 1.5rem;
+            flex: 1;
             overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) var(--background);
         }
 
-        .notes-input-container {
-            margin-bottom: 1rem;
+        /* Custom Scrollbar Styles */
+        .notes-body::-webkit-scrollbar {
+            width: 8px;
         }
 
-        #usernameInput {
+        .notes-body::-webkit-scrollbar-track {
+            background: var(--background);
+            border-radius: 4px;
+        }
+
+        .notes-body::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 4px;
+            border: 2px solid var(--background);
+        }
+
+        /* Auth Form Styles */
+        .auth-form {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem;
+            gap: 1rem;
+        }
+
+        .auth-input {
             width: 100%;
-            padding: 0.5rem;
-            margin-bottom: 0.5rem;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
             border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            font-size: 0.9rem;
+            border-radius: 0.75rem;
+            font-size: 0.95rem;
+            background-color: var(--background);
         }
+
+        .auth-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .auth-btn:hover {
+            opacity: 0.9;
+        }
+
+        .auth-message {
+            margin-top: 0.75rem;
+            text-align: center;
+            font-size: 0.9rem;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .auth-message.error {
+            background-color: var(--error-bg);
+            color: var(--error-color);
+        }
+
+        .auth-message.success {
+            background-color: var(--success-bg);
+            color: var(--success-color);
+        }
+
+        /* Logged In User Styles */
+        .logged-in-user {
+            position: sticky;
+            top: 0;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: var(--background);
+            border-radius: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .logged-in-user span {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .logout-btn {
+            padding: 0.5rem 1rem;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logout-btn:hover {
+            background-color: var(--error-bg);
+            color: var(--error-color);
+            border-color: var(--error-color);
+        }
+
+        /* Notes Actions */
+        .notes-actions {
+            position: sticky;
+            top: 70px;
+            margin-bottom: 1rem;
+            z-index: 2;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: opacity 0.2s ease;
+        }
+
+        .download-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Notes Input */
+        .notes-input-container {
+            position: sticky;
+            top: 130px;
+            margin-bottom: 1rem;
+            z-index: 2;
+            background-color: var(--card-bg);
+            padding: 0.5rem 0;
+        }
+ 
+        #notesInterface {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+       }
 
         #noteInput {
             width: 100%;
             height: 100px;
-            padding: 0.5rem;
-            margin-bottom: 0.5rem;
+            padding: 0.75rem;
             border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             resize: vertical;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            font-family: inherit;
+            background-color: var(--background);
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        #noteInput:focus {
+            outline: none;
+            border-color: var(--primary-color);
         }
 
         .save-note-btn {
@@ -219,20 +381,32 @@
             background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             cursor: pointer;
-            transition: opacity 0.2s;
+            font-weight: 500;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: opacity 0.2s ease;
         }
 
         .save-note-btn:hover {
             opacity: 0.9;
         }
 
+        /* Notes List */
         .note-item {
             padding: 1rem;
-            background-color: var(--hover-bg);
-            border-radius: 0.5rem;
-            margin-bottom: 0.5rem;
+            background-color: var(--background);
+            border-radius: 0.75rem;
+            margin-bottom: 0.75rem;
+            transition: transform 0.2s ease;
+        }
+
+        .note-item:hover {
+            transform: translateY(-2px);
         }
 
         .note-content {
@@ -247,11 +421,7 @@
             color: var(--text-secondary);
             display: flex;
             justify-content: space-between;
-        }
-
-        .note-actions {
-            display: flex;
-            gap: 0.5rem;
+            align-items: center;
         }
 
         .note-actions button {
@@ -259,50 +429,52 @@
             border: none;
             color: var(--text-secondary);
             cursor: pointer;
-            padding: 0.2rem;
+            padding: 0.4rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
         }
 
         .note-actions button:hover {
-            color: var(--primary-color);
+            color: var(--error-color);
+            background-color: var(--error-bg);
         }
 
+        /* Mobile Styles */
         @media (max-width: 768px) {
-            .mobile-menu-button {
-                display: block;
-            }
-
-            .nav-links {
-                display: none;
-                position: absolute;
-                top: var(--navbar-height);
-                left: 0;
-                right: 0;
-                background-color: var(--card-bg);
-                flex-direction: column;
-                padding: 1rem;
-                border-bottom: 1px solid var(--border-color);
-            }
-
-            .nav-links.show {
-                display: flex;
-            }
-
-            .nav-link {
-                width: 100%;
-                text-align: center;
-            }
-
             .notes-modal {
-                bottom: 0;
+                width: 100% !important;
+                height: 80vh !important;
                 right: 0;
-                width: 100%;
+                bottom: 0;
                 border-radius: 1rem 1rem 0 0;
+            }
+
+            .notes-header {
+                padding: 1rem;
+            }
+
+            .notes-body {
+                padding: 1rem;
+            }
+
+            /* Adjust sticky positions for mobile */
+            .logged-in-user {
+                top: 0;
+            }
+
+            .notes-actions {
+                top: 60px;
+            }
+
+            .notes-input-container {
+                top: 120px;
             }
         }
     </style>
 
     {% block page_css %}{% endblock %}
 </head>
+
 <body>
     <nav class="navbar">
         <div class="nav-container">
@@ -310,9 +482,6 @@
                 <i class="bi bi-robot"></i>
                 Interview Hub
             </a>
-            <button class="mobile-menu-button" aria-label="Toggle menu">
-                <i class="bi bi-list"></i>
-            </button>
             <div class="nav-links">
                 <a href="/" class="nav-link {% if active_page == 'chat' %}active{% endif %}">
                     <i class="bi bi-chat-dots"></i> Chat
@@ -341,13 +510,34 @@
                 <button class="close-modal">×</button>
             </div>
             <div class="notes-body">
-                <div class="notes-input-container">
-                    <input type="text" id="usernameInput" placeholder="Enter your username">
-                    <textarea id="noteInput" placeholder="Write your note here..."></textarea>
-                    <button id="saveNote" class="save-note-btn">Save Note</button>
+                <!-- Authentication Form -->
+                <div id="authForm" class="auth-form">
+                    <input type="text" id="usernameInput" placeholder="Username" class="auth-input">
+                    <input type="password" id="passwordInput" placeholder="Password" class="auth-input">
+                    <button id="authButton" class="auth-btn">Login</button>
+                    <p id="authMessage" class="auth-message"></p>
                 </div>
-                <div class="notes-list" id="notesList">
-                    <!-- Notes will be populated here -->
+
+                <!-- Notes Interface -->
+                <div id="notesInterface" style="display: none;">
+                    <div class="logged-in-user">
+                        <span>Welcome, <strong id="userDisplay"></strong></span>
+                        <button onclick="logout()" class="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                    <div class="notes-actions">
+                        <button class="download-btn" onclick="downloadNotes()">
+                            <i class="fas fa-file-download"></i> Download Notes
+                        </button>
+                    </div>
+                    <div class="notes-input-container">
+                        <textarea id="noteInput" placeholder="Write your note here..."></textarea>
+                        <button id="saveNote" class="save-note-btn">
+                            <i class="fas fa-save"></i> Save Note
+                        </button>
+                    </div>
+                    <div class="notes-list" id="notesList"></div>
                 </div>
             </div>
         </div>
@@ -355,29 +545,53 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const mobileMenuButton = document.querySelector('.mobile-menu-button');
-            const navLinks = document.querySelector('.nav-links');
-
-            mobileMenuButton?.addEventListener('click', () => {
-                navLinks.classList.toggle('show');
-            });
-
             // Notes functionality
             const notesButton = document.getElementById('notesButton');
             const notesModal = document.getElementById('notesModal');
             const closeModal = document.querySelector('.close-modal');
-            const saveNoteBtn = document.getElementById('saveNote');
+            const authForm = document.getElementById('authForm');
+            const notesInterface = document.getElementById('notesInterface');
             const usernameInput = document.getElementById('usernameInput');
+            const passwordInput = document.getElementById('passwordInput');
+            const authButton = document.getElementById('authButton');
+            const authMessage = document.getElementById('authMessage');
             const noteInput = document.getElementById('noteInput');
+            const saveNoteBtn = document.getElementById('saveNote');
             const notesList = document.getElementById('notesList');
+            const userDisplay = document.getElementById('userDisplay');
 
             let isModalOpen = false;
+            let currentUsername = null;
 
+            // Check if user is already logged in
+            async function checkLoginStatus() {
+                try {
+                    const response = await fetch('/auth/status');
+                    const data = await response.json();
+                    if (data.logged_in) {
+                        currentUsername = data.username;
+                        userDisplay.textContent = currentUsername;
+                        authForm.style.display = 'none';
+                        notesInterface.style.display = 'block';
+                        if (isModalOpen) {
+                            loadNotes();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error checking login status:', error);
+                }
+            }
+
+            // Initial login status check
+            checkLoginStatus();
+
+            // Modal toggle
+            // Modal toggle
             notesButton.addEventListener('click', () => {
                 isModalOpen = !isModalOpen;
                 notesModal.style.display = isModalOpen ? 'block' : 'none';
-                if (isModalOpen && usernameInput.value) {
-                    loadNotes(usernameInput.value);
+                if (isModalOpen && currentUsername) {
+                    loadNotes();
                 }
             });
 
@@ -386,12 +600,55 @@
                 notesModal.style.display = 'none';
             });
 
-            saveNoteBtn.addEventListener('click', async () => {
+            // Authentication
+            authButton.addEventListener('click', async () => {
                 const username = usernameInput.value.trim();
+                const password = passwordInput.value;
+
+                if (!username || !password) {
+                    showAuthMessage('Please enter both username and password', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ username, password })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        currentUsername = username;
+                        userDisplay.textContent = username;
+                        showAuthMessage('Login successful', 'success');
+                        setTimeout(() => {
+                            authForm.style.display = 'none';
+                            notesInterface.style.display = 'block';
+                            loadNotes();
+                        }, 1000);
+                    } else {
+                        showAuthMessage(data.error, 'error');
+                    }
+                } catch (error) {
+                    showAuthMessage('Authentication failed', 'error');
+                }
+            });
+
+            function showAuthMessage(message, type) {
+                authMessage.textContent = message;
+                authMessage.className = `auth-message ${type}`;
+            }
+
+            // Save note
+            saveNoteBtn.addEventListener('click', async () => {
                 const content = noteInput.value.trim();
 
-                if (!username || !content) {
-                    alert('Please enter both username and note content');
+                if (!content) {
+                    alert('Please enter note content');
                     return;
                 }
 
@@ -401,24 +658,29 @@
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ username, content })
+                        body: JSON.stringify({ content })
                     });
 
                     if (response.ok) {
                         noteInput.value = '';
-                        loadNotes(username);
+                        loadNotes();
                     } else {
-                        throw new Error('Failed to save note');
+                        const data = await response.json();
+                        throw new Error(data.error || 'Failed to save note');
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('Failed to save note');
+                    alert(error.message || 'Failed to save note');
                 }
             });
 
-            async function loadNotes(username) {
+            // Load notes
+            async function loadNotes() {
                 try {
-                    const response = await fetch(`/notes?username=${encodeURIComponent(username)}`);
+                    const response = await fetch('/notes');
+                    if (!response.ok) {
+                        throw new Error('Failed to load notes');
+                    }
                     const data = await response.json();
                     
                     notesList.innerHTML = data.notes.map(note => `
@@ -436,10 +698,11 @@
                     `).join('');
                 } catch (error) {
                     console.error('Error:', error);
-                    notesList.innerHTML = '<p>Failed to load notes</p>';
+                    notesList.innerHTML = '<p class="auth-message error">Failed to load notes</p>';
                 }
             }
 
+            // Delete note
             window.deleteNote = async (noteId) => {
                 if (!confirm('Are you sure you want to delete this note?')) return;
 
@@ -448,23 +711,55 @@
                         method: 'DELETE'
                     });
 
-                    if (response.ok) {
-                        loadNotes(usernameInput.value);
-                    } else {
+                    if (!response.ok) {
                         throw new Error('Failed to delete note');
                     }
+                    loadNotes();
                 } catch (error) {
                     console.error('Error:', error);
                     alert('Failed to delete note');
                 }
             };
 
-            usernameInput.addEventListener('change', () => {
-                if (usernameInput.value.trim()) {
-                    loadNotes(usernameInput.value.trim());
+            // Download notes
+            window.downloadNotes = async () => {
+                try {
+                    window.open('/notes/download', '_blank');
+                } catch (error) {
+                    console.error('Error downloading notes:', error);
+                    alert('Failed to download notes');
+                }
+            };
+
+            // Logout functionality
+            window.logout = async () => {
+                try {
+                    const response = await fetch('/auth/logout', {
+                        method: 'POST'
+                    });
+
+                    if (response.ok) {
+                        currentUsername = null;
+                        authForm.style.display = 'block';
+                        notesInterface.style.display = 'none';
+                        authForm.reset();
+                        authMessage.textContent = '';
+                        notesList.innerHTML = '';
+                    }
+                } catch (error) {
+                    console.error('Error logging out:', error);
+                }
+            };
+
+            // Handle Enter key in password input
+            passwordInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    authButton.click();
                 }
             });
 
+            // Close modal when clicking outside
             document.addEventListener('click', (e) => {
                 if (isModalOpen && !notesModal.contains(e.target) && !notesButton.contains(e.target)) {
                     isModalOpen = false;

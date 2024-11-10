@@ -7,57 +7,78 @@
 {% block page_css %}
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
-    .topics-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 1.5rem;
-        margin-top: 2rem;
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        min-height: calc(100vh - var(--navbar-height));
     }
 
+    .container h2 {
+        margin-bottom: 2rem;
+        font-size: 2rem;
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+
+    /* Modern Grid Layout */
+    .topics-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    /* Modern Topic Button */
     .topic-btn {
-        padding: 1.5rem;
         background-color: var(--card-bg);
         border: 1px solid var(--border-color);
-        border-radius: 0.75rem;
+        border-radius: 1rem;
+        padding: 1.5rem;
         cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 1.1rem;
-        font-weight: 500;
-        text-align: left;
+        transition: all 0.2s ease;
         display: flex;
         align-items: center;
+        gap: 1rem;
+        text-align: left;
+        width: 100%;
         color: var(--text-primary);
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .topic-btn:hover {
+        transform: translateY(-2px);
+        background-color: var(--hover-bg);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     .topic-icon {
-        margin-right: 15px;
-        width: 40px;
-        height: 40px;
-        background-color: var(--hover-bg);
-        border-radius: 8px;
+        width: 2.5rem;
+        height: 2.5rem;
+        background-color: #7c3aed15;
+        border-radius: 0.75rem;
         display: flex;
         align-items: center;
         justify-content: center;
         color: var(--primary-color);
+        font-size: 1.2rem;
+        flex-shrink: 0;
     }
 
-    .topic-btn:hover {
-        transform: translateY(-3px);
-        background-color: var(--hover-bg);
-    }
-
+    /* Questions Display */
     .question-card {
         background-color: var(--card-bg);
         border: 1px solid var(--border-color);
-        border-radius: 0.75rem;
-        padding: 1.8rem;
+        border-radius: 1rem;
+        padding: 1.5rem;
         margin-bottom: 1.5rem;
-        transition: transform 0.2s ease;
+        transition: all 0.2s ease;
     }
 
     .question-card:hover {
         transform: translateY(-2px);
-        background-color: var(--hover-bg);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     .question-card h3 {
@@ -72,25 +93,74 @@
         padding-top: 1rem;
         border-top: 1px solid var(--border-color);
         color: var(--text-primary);
-        font-size: 1rem;
         line-height: 1.7;
     }
 
+    /* Back Button */
+    .back-btn {
+        padding: 0.8rem 1.2rem;
+        margin-bottom: 2rem;
+        background-color: var(--hover-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        cursor: pointer;
+        font-size: 1rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+        transform: translateX(-2px);
+        background-color: var(--background);
+    }
+
+    /* Loading States */
+    .loading-container {
+        text-align: center;
+        padding: 4rem 2rem;
+        background-color: var(--card-bg);
+        border-radius: 1rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .loading-spinner {
+        color: var(--primary-color);
+        font-size: 2rem;
+    }
+
+    .error-container {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #dc3545;
+        background-color: var(--card-bg);
+        border-radius: 1rem;
+        border: 1px solid var(--border-color);
+    }
+
+    /* Pagination */
     .pagination {
         display: flex;
         justify-content: center;
+        align-items: center;
         gap: 0.5rem;
         margin: 2rem 0;
     }
 
     .page-btn {
-        padding: 0.6rem 1.2rem;
+        padding: 0.6rem 1rem;
         border: 1px solid var(--border-color);
-        border-radius: 0.5rem;
+        border-radius: 0.75rem;
         cursor: pointer;
         background-color: var(--card-bg);
-        color: var(--primary-color);
+        color: var(--text-primary);
         transition: all 0.2s ease;
+        min-width: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .page-btn.active {
@@ -108,66 +178,26 @@
         cursor: not-allowed;
     }
 
-    .back-btn {
-        padding: 0.8rem 1.5rem;
-        margin-bottom: 1.5rem;
-        background-color: var(--hover-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 0.5rem;
-        cursor: pointer;
-        font-size: 1rem;
-        color: var(--primary-color);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        transition: all 0.2s ease;
-    }
-
-    .back-btn:hover {
-        background-color: var(--hover-bg);
-    }
-
-    #currentTopic {
-        color: var(--primary-color);
-        font-size: 1.8rem;
-        margin-bottom: 2rem;
-    }
-
-    .loading-container {
-        text-align: center;
-        padding: 2rem;
-    }
-
-    .loading-spinner {
-        color: var(--primary-color);
-        font-size: 2rem;
-    }
-
-    .error-container {
-        text-align: center;
-        padding: 2rem;
-        color: #dc3545;
-    }
-
-    /* Markdown content styling */
+    /* Markdown Content */
     .markdown-content {
         margin-top: 0.5rem;
     }
 
     .markdown-content code {
         background-color: var(--background);
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-family: 'Courier New', monospace;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.25rem;
+        font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
         font-size: 0.9em;
     }
 
     .markdown-content pre {
         background-color: var(--background);
         padding: 1rem;
-        border-radius: 0.5rem;
+        border-radius: 0.75rem;
         overflow-x: auto;
         margin: 1rem 0;
+        border: 1px solid var(--border-color);
     }
 
     .markdown-content pre code {
@@ -175,34 +205,40 @@
         padding: 0;
     }
 
-    .markdown-content ul, 
-    .markdown-content ol {
-        margin: 0.8rem 0;
-        padding-left: 1.5rem;
+    /* Mobile Responsiveness */
+    @media (max-width: 1024px) {
+        .topics-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
 
-    .markdown-content blockquote {
-        border-left: 4px solid var(--primary-color);
-        padding-left: 1rem;
-        margin: 1rem 0;
-        background-color: var(--hover-bg);
-        border-radius: 0 0.5rem 0.5rem 0;
-    }
+    @media (max-width: 768px) {
+        .container {
+            padding: 1rem;
+        }
 
-    @media (max-width: 640px) {
-        .question-card {
-            padding: 1.2rem;
+        .topics-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .container h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
         .topic-btn {
             padding: 1.2rem;
-            font-size: 1rem;
         }
 
         .topic-icon {
-            width: 32px;
-            height: 32px;
-            margin-right: 12px;
+            width: 2rem;
+            height: 2rem;
+            font-size: 1rem;
+        }
+
+        .question-card {
+            padding: 1.2rem;
         }
     }
 </style>
