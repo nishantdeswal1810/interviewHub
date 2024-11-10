@@ -1,9 +1,11 @@
+<!-- base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Interview Assistant{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='chip.png') }}">
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -26,6 +28,7 @@
             --text-secondary: #6B7280;
             --border-color: #E5E7EB;
             --hover-bg: #F3F4F6;
+            --navbar-height: 64px; /* Define fixed navbar height */
         }
 
         * {
@@ -38,16 +41,29 @@
             font-family: 'Inter', sans-serif;
             background-color: var(--background);
             color: var(--text-primary);
+            padding-top: var(--navbar-height); /* Add padding to account for fixed navbar */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         /* Navbar Styles */
         .navbar {
             background-color: var(--card-bg);
             border-bottom: 1px solid var(--border-color);
-            padding: 1rem;
+            padding: 0 1rem;
+            height: var(--navbar-height);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
         }
 
         .nav-container {
+            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
             display: flex;
@@ -99,10 +115,11 @@
         }
 
         .container {
+            flex: 1;
+            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 1rem;
-            min-height: calc(100vh - 4rem);
+            padding: 2rem 1rem;
         }
 
         @media (max-width: 768px) {
@@ -113,7 +130,7 @@
             .nav-links {
                 display: none;
                 position: absolute;
-                top: 100%;
+                top: var(--navbar-height);
                 left: 0;
                 right: 0;
                 background-color: var(--card-bg);
