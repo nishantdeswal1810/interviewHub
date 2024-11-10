@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 from src.chat import ChatBot
 from src.qbank import QuestionBank
+from src.notes import NotesManager
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 from src.generator import PDFGenerator
@@ -29,6 +30,7 @@ def allowed_file(filename):
 chatbot = ChatBot(api_key=os.getenv("GROQ_API_KEY"))
 qbank = QuestionBank(mongo_uri=os.getenv("MONGO_URI"))
 pdf_generator = PDFGenerator()  
+notes_manager = NotesManager(mongo_uri=os.getenv("MONGO_URI"))
 
 @app.route('/')
 def home():
@@ -119,6 +121,43 @@ def get_questions(topic):
         return jsonify(qbank.get_questions(topic, page))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+
+# routes for notes
+@app.route('/notes', methods=['GET'])
+def get_user_notes():
+    username = request.args.get('username')
+    if not username:
+        return jsonify({'error': 'Username is required'}), 400
+    
+    notes = notes_manager.get_notes(username)
+    return jsonify({'notes': notes})
+
+@app.route('/notes', methods=['POST'])
+def save_note():
+    data = request.json
+    username = data.get('username')
+    content = data.get('content')
+    
+    if not username or not content:
+        return jsonify({'error': 'Username and content are required'}), 400
+    
+    notes_manager.save_note(username, content)
+    return jsonify({'status': 'success'})
+
+@app.route('/notes/<note_id>', methods=['PUT'])
+def update_note(note_id):
+    content = request.json.get('content')
+    if not content:
+        return jsonify({'error': 'Content is required'}), 400
+    
+    notes_manager.update_note(note_id, content)
+    return jsonify({'status': 'success'})
+
+@app.route('/notes/<note_id>', methods=['DELETE'])
+def delete_note(note_id):
+    notes_manager.delete_note(note_id)
+    return jsonify({'status': 'success'})
 
 if __name__ == '__main__':
     app.run(debug=True)
